@@ -8,7 +8,7 @@
             <div class="flex flex-col md:flex-row gap-6">
                 <div class="w-full md:w-1/3">
                     {% if partido.imagen %}
-                        <img src="{{ partido.imagen.url }}" alt="{{ partido.nombre }}" class="rounded-xl shadow-lg w-full">
+                        <img src="{{ partido.imagen.url }}" alt="{{ partido.nombre }}" class="rounded-xl w-full">
                     {% else %}
                         <div class="avatar placeholder w-full aspect-square">
                             <div class="bg-neutral text-neutral-content rounded-xl w-full">
@@ -46,20 +46,20 @@
                 </div>
             </div>
 
-            <div class="stats shadow my-6">
+            <div class="stats my-6">
                 <div class="stat">
-                    <div class="stat-title">Total Casos</div>
-                    <div class="stat-value">{{ partido.total_casos }}</div>
+                    <div class="stat-title text-xs">Total Casos</div>
+                    <div class="stat-value text-sm">{{ partido.total_casos }}</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-title">Monto Total</div>
-                    <div class="stat-value text-secondary">
+                    <div class="stat-title text-xs">Monto Total</div>
+                    <div class="stat-value text-secondary text-sm">
                         ${{ partido.total_monto|format_large_number }}
                     </div>
                 </div>
                 <div class="stat">
-                    <div class="stat-title">Casos Resueltos</div>
-                    <div class="stat-value">{{ partido.casos_resueltos }}</div>
+                    <div class="stat-title text-xs">Casos Resueltos</div>
+                    <div class="stat-value text-sm">{{ partido.casos_resueltos }}</div>
                 </div>
             </div>
 
