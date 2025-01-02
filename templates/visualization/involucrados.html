@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="mb-6">
+    <form method="get" class="flex gap-2 max-w-xl">
+        <div class="form-control flex-1">
+            <div class="join w-full">
+                <input type="text" 
+                       name="q" 
+                       placeholder="Buscar por nombre..." 
+                       class="input input-bordered join-item w-full"
+                       value="{{ query }}">
+                <button class="btn btn-outline join-item">
+                    <i data-lucide="search" class="h-5 w-5"></i>
+                </button>
+            </div>
+        </div>
+        {% if query %}
+        <a href="{% url 'involucrados' %}" class="btn btn-outline flex items-center gap-2">
+            <i data-lucide="x" class="h-4 w-4"></i>
+            Limpiar
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Total Casos</th>
+                <th>Monto Total Involucrado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for responsable in responsables %}
+            <tr>
+                <td class="font-medium">{{ responsable.nombre }}</td>
+                <td>{{ responsable.total_casos }}</td>
+                <td>${{ responsable.total_monto|format_large_number }}</td>
+                <td>
+                    <a href="{% url 'responsable_detalle' responsable.id %}" class="btn btn-sm btn-primary">
+                        <i data-lucide="info" class="w-4 h-4"></i>
+                        Ver Detalles
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not responsables %}
+            <tr>
+                <td colspan="4" class="text-center py-4">
+                    {% if query %}
+                        No se encontraron resultados para "{{ query }}"
+                    {% else %}
+                        No hay involucrados registrados
+                    {% endif %}
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<!-- Tarjetas de Resumen -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="card bg-primary text-primary-content">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i data-lucide="file-text"></i>
+                Total Casos
+            </h2>
+            <p class="text-3xl">{{ total_casos }}</p>
+        </div>
+    </div>
+    
+    <div class="card bg-secondary text-secondary-content">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i data-lucide="dollar-sign"></i>
+                Monto Total
+            </h2>
+            <p class="text-3xl">
+                ${{ total_monto|format_large_number }} CLP
+            </p>
+            <p class="text-sm opacity-80">
+                Promedio por caso: ${{ promedio_monto|format_large_number }} CLP
+            </p>
+        </div>
+    </div>
+    
+    <div class="card bg-accent text-accent-content">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i data-lucide="check-circle"></i>
+                Casos Resueltos
+            </h2>
+            <p class="text-3xl">{{ casos_resueltos }}</p>
+            <p class="text-sm opacity-80">
+                {{ casos_resueltos|multiply:100|divide:total_casos|floatformat:1 }}% del total
+            </p>
+        </div>
+    </div>
+    
+    <div class="card bg-neutral text-neutral-content">
+        <div class="card-body">
+            <h2 class="card-title">
+                <i data-lucide="calendar"></i>
+                Período
+            </h2>
+            <p class="text-3xl">{{ rango_años.min }} - {{ rango_años.max }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos -->
+<div class="flex justify-between items-center mb-4">
+    <h2 class="card-title">Estadísticas por Partido y Sector</h2>
+    <select id="tipoData" class="select select-bordered w-48">
+        <option value="casos">Cantidad de Casos</option>
+        <option value="monto">Monto Total</option>
+    </select>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h3 class="card-title">
+                <i data-lucide="pie-chart"></i>
+                Por Sector
+            </h3>
+            <div class="h-[400px]">
+                <canvas id="casosPorSector"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h3 class="card-title">
+                <i data-lucide="bar-chart"></i>
+                Por Partido
+            </h3>
+            <div class="h-[400px]">
+                <canvas id="casosPorPartido"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráfico de Casos por Año -->
+<div class="card bg-base-100 shadow-xl mt-4">
+    <div class="card-body">
+        <h2 class="card-title">
+            <i data-lucide="bar-chart"></i>
+            Casos por Año
+        </h2>
+        <div class="h-64">
+            <canvas id="casosPorAno"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Gráfico de Índice de Percepción -->
+<div class="card bg-base-100 shadow-xl mt-4">
+    <div class="card-body">
+        <h2 class="card-title">
+            <i data-lucide="trending-up"></i>
+            Índice de Percepción de Corrupción
+        </h2>
+        <div class="h-64">
+            <canvas id="percepcionCorrupcion"></canvas>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 500
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'bottom'
+            }
+        }
+    };
+
+    // Gráfico por Sector
+    const sectorData = {{ casos_por_sector|safe }};
+    const configSector = {
+        type: 'pie',
+        data: {
+            labels: sectorData.map(item => item.partido__sector__nombre),
+            datasets: [{
+                data: sectorData.map(item => item.total),
+                backgroundColor: sectorData.map(item => item.partido__sector__color)
+            }]
+        },
+        options: commonOptions
+    };
+    const chartSector = new Chart(
+        document.getElementById('casosPorSector'),
+        configSector
+    );
+
+    // Gráfico por Partido
+    const partidoData = {{ casos_por_partido|safe }};
+    const configPartido = {
+        type: 'bar',
+        data: {
+            labels: partidoData.map(item => item.partido__nombre),
+            datasets: [{
+                label: 'Cantidad de Casos',
+                data: partidoData.map(item => item.total_casos),
+                backgroundColor: partidoData.map(item => item.partido__sector__color)
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+    const chartPartido = new Chart(
+        document.getElementById('casosPorPartido'),
+        configPartido
+    );
+
+    // Gráfico por Año
+    const anoData = {{ casos_por_ano|safe }};
+    const configAno = {
+        type: 'bar',
+        data: {
+            labels: anoData.map(item => item.año),
+            datasets: [{
+                label: 'Casos por Año',
+                data: anoData.map(item => item.total),
+                backgroundColor: '#36A2EB'
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+    const chartAno = new Chart(
+        document.getElementById('casosPorAno'),
+        configAno
+    );
+
+    // Gráfico de Percepción
+    const percepcionData = {{ percepcion_corrupcion|safe }};
+    const configPercepcion = {
+        type: 'line',
+        data: {
+            labels: percepcionData.map(item => item.año),
+            datasets: [{
+                label: 'Índice de Percepción',
+                data: percepcionData.map(item => item.cpi),
+                borderColor: '#FF6384',
+                tension: 0.1
+            }]
+        },
+        options: commonOptions
+    };
+    const chartPercepcion = new Chart(
+        document.getElementById('percepcionCorrupcion'),
+        configPercepcion
+    );
+
+    // Selector de tipo de datos
+    document.getElementById('tipoData').addEventListener('change', function(e) {
+        const tipo = e.target.value;
+        
+        // Actualizar gráfico de sectores
+        chartSector.data.datasets[0].data = sectorData.map(item => 
+            tipo === 'casos' ? item.total : item.total_monto
+        );
+        chartSector.update();
+
+        // Actualizar gráfico de partidos
+        chartPartido.data.datasets[0].label = tipo === 'casos' ? 'Cantidad de Casos' : 'Monto Total';
+        chartPartido.data.datasets[0].data = partidoData.map(item => 
+            tipo === 'casos' ? item.total_casos : item.total_monto
+        );
+        chartPartido.update();
+    });
+});
+</script>
+{% endblock %}

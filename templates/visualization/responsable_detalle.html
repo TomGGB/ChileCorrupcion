@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-6">{{ responsable.nombre }}</h1>
+
+            <div class="stats shadow mb-6">
+                <div class="stat">
+                    <div class="stat-title">Total Casos</div>
+                    <div class="stat-value">{{ responsable.total_casos }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-title">Monto Total</div>
+                    <div class="stat-value text-secondary text-2xl">
+                        ${{ responsable.total_monto|format_large_number }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider">Casos Involucrados</div>
+
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr>
+                            <th>Caso</th>
+                            <th>Año</th>
+                            <th>Partido</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for caso in casos %}
+                        <tr>
+                            <td>{{ caso.caso }}</td>
+                            <td>{{ caso.año }}</td>
+                            <td>
+                                {% if caso.partido %}
+                                    <a href="{% url 'partido_detalle' caso.partido.id %}" class="link link-primary">
+                                        {{ caso.partido.nombre }}
+                                    </a>
+                                {% else %}
+                                    No especificado
+                                {% endif %}
+                            </td>
+                            <td>${{ caso.monto|format_large_number }}</td>
+                            <td>
+                                <div class="badge badge-outline">{{ caso.estado }}</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

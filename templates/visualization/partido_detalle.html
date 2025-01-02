@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="w-full md:w-1/3">
+                    {% if partido.imagen %}
+                        <img src="{{ partido.imagen.url }}" alt="{{ partido.nombre }}" class="rounded-xl shadow-lg w-full">
+                    {% else %}
+                        <div class="avatar placeholder w-full aspect-square">
+                            <div class="bg-neutral text-neutral-content rounded-xl w-full">
+                                <span class="text-5xl">{{ partido.nombre|slice:":2" }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="w-full md:w-2/3">
+                    <h1 class="text-3xl font-bold mb-2">{{ partido.nombre }}</h1>
+                    <p class="text-lg opacity-80 mb-4">
+                        <i data-lucide="layers" class="inline w-5 h-5 mr-2"></i>
+                        Sector: {{ partido.sector.nombre }}
+                    </p>
+                    
+                    {% if partido.fecha_fundacion %}
+                    <p class="text-sm opacity-80 mb-2">
+                        <i data-lucide="calendar" class="inline w-4 h-4 mr-2"></i>
+                        Fundado el {{ partido.fecha_fundacion|date:"d/m/Y" }}
+                    </p>
+                    {% endif %}
+                    
+                    {% if partido.sitio_web %}
+                    <a href="{{ partido.sitio_web }}" target="_blank" class="text-sm opacity-80 hover:opacity-100 mb-4 inline-block">
+                        <i data-lucide="globe" class="inline w-4 h-4 mr-2"></i>
+                        Sitio Web Oficial
+                    </a>
+                    {% endif %}
+                    
+                    {% if partido.descripcion %}
+                    <div class="divider"></div>
+                    <p class="text-base">{{ partido.descripcion|linebreaks }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="stats shadow my-6">
+                <div class="stat">
+                    <div class="stat-title">Total Casos</div>
+                    <div class="stat-value">{{ partido.total_casos }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-title">Monto Total</div>
+                    <div class="stat-value text-secondary">
+                        ${{ partido.total_monto|format_large_number }}
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-title">Casos Resueltos</div>
+                    <div class="stat-value">{{ partido.casos_resueltos }}</div>
+                </div>
+            </div>
+
+            <div class="divider">Casos Involucrados</div>
+
+            <div class="overflow-x-auto">
+                <table class="table table-zebra">
+                    <thead>
+                        <tr>
+                            <th>Caso</th>
+                            <th>Año</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for caso in casos %}
+                        <tr>
+                            <td>{{ caso.caso }}</td>
+                            <td>{{ caso.año }}</td>
+                            <td>
+                                {% if caso.monto %}
+                                    ${{ caso.monto|format_large_number }}
+                                {% else %}
+                                    No especificado
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="badge badge-outline">{{ caso.estado }}</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

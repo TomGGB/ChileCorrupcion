@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="mb-6 space-y-4">
+    <form method="get" class="flex gap-2 max-w-xl">
+        <div class="form-control flex-1">
+            <div class="join w-full">
+                <input type="text" 
+                       name="q" 
+                       placeholder="Buscar por nombre..." 
+                       class="input input-bordered join-item w-full"
+                       value="{{ query }}">
+                <button class="btn btn-outline join-item">
+                    <i data-lucide="search" class="h-5 w-5"></i>
+                </button>
+            </div>
+        </div>
+        {% if query %}
+        <a href="{% url 'partidos' %}{% if sector_actual %}?sector={{ sector_actual }}{% endif %}" 
+           class="btn btn-outline flex items-center gap-2">
+            <i data-lucide="x" class="h-4 w-4"></i>
+            Limpiar
+        </a>
+        {% endif %}
+    </form>
+
+    <div class="flex flex-wrap gap-2">
+        <a href="{% url 'partidos' %}{% if query %}?q={{ query }}{% endif %}" 
+           class="btn btn-sm {% if not sector_actual %}btn-primary{% else %}btn-outline{% endif %}">
+            Todos
+        </a>
+        {% for sector in sectores %}
+        <a href="{% url 'partidos' %}?sector={{ sector.id }}{% if query %}&q={{ query }}{% endif %}" 
+           class="btn btn-sm {% if sector.id|stringformat:'s' == sector_actual %}btn-primary{% else %}btn-outline{% endif %}"
+           style="{% if sector.color %}--btn-color: {{ sector.color }};{% endif %}">
+            {{ sector.nombre }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    {% for partido in partidos %}
+    <div class="card bg-base-100 shadow-xl">
+        <figure class="px-6 pt-6">
+            {% if partido.imagen %}
+                <img src="{{ partido.imagen.url }}" alt="{{ partido.nombre }}" class="rounded-xl shadow-lg h-32 w-32 object-contain">
+            {% else %}
+                <div class="avatar placeholder">
+                    <div class="bg-neutral text-neutral-content rounded-xl w-32 h-32">
+                        <span class="text-4xl">{{ partido.nombre|slice:":2" }}</span>
+                    </div>
+                </div>
+            {% endif %}
+        </figure>
+        <div class="card-body">
+            <h2 class="card-title">
+                <i data-lucide="building"></i>
+                {{ partido.nombre }}
+            </h2>
+            <p class="text-sm opacity-80">Sector: {{ partido.sector.nombre }}</p>
+            <div class="stats shadow mt-4">
+                <div class="stat">
+                    <div class="stat-title">Total Casos</div>
+                    <div class="stat-value">{{ partido.total_casos }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-title">Monto Total</div>
+                    <div class="stat-value text-secondary text-2xl">
+                        ${{ partido.total_monto|format_large_number }}
+                    </div>
+                </div>
+            </div>
+            <div class="card-actions justify-end mt-4">
+                <a href="{% url 'partido_detalle' partido.id %}" class="btn btn-primary">
+                    <i data-lucide="info"></i>
+                    Ver Detalles
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
