@@ -1,1 +1,1 @@
-web: python -m pip install -r requirements.txt && python manage.py collectstatic --noinput && gunicorn ChileCorrupcion.wsgi:application --log-file -
+web: gunicorn ChileCorrupcion.wsgi:application --bind 0.0.0.0:$PORT
