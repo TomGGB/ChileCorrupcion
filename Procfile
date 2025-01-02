@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput && gunicorn ChileCorrupcion.wsgi:application --log-file -
+web: python -m pip install -r requirements.txt && python manage.py collectstatic --noinput && gunicorn ChileCorrupcion.wsgi:application --log-file -
