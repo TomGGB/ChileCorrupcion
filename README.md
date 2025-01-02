@@ -22,4 +22,3 @@ Plataforma web que visualiza y analiza datos sobre casos de corrupción en Chile
   - Chart.js
   - Lucide Icons
 - **Base de Datos**: Sqlite
-

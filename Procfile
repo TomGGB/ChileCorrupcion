@@ -1,1 +1,1 @@
-web: gunicorn ChileCorrupcion.wsgi:application --log-file -
+web: python manage.py collectstatic --noinput && gunicorn ChileCorrupcion.wsgi:application --log-file -

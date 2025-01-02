@@ -1,0 +1,8 @@
+[build]
+builder = "nixpacks"
+buildCommand = "./build.sh"
+
+[deploy]
+startCommand = "gunicorn ChileCorrupcion.wsgi:application"
+healthcheckPath = "/"
+healthcheckTimeout = 100 
