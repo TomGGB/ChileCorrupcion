@@ -7,13 +7,19 @@
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <title>{% block title %}Chile Corrupción{% endblock %}</title>
     
-    <!-- Precargar estilos críticos -->
+    <!-- Precargar recursos críticos -->
     <link rel="preload" href="{% static 'css/output.css' %}" as="style">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" as="style">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/chart.js" as="script">
+    <link rel="preload" href="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" as="script">
     
     <!-- Estilos -->
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     
     <!-- Pantalla de carga inicial -->
     <style>
@@ -139,18 +145,23 @@
     </div>
 
     <script>
-        // Ocultar pantalla de carga cuando todo esté listo
-        window.addEventListener('load', function() {
-            document.getElementById('loadingScreen').classList.add('hidden');
+        // Inicializar iconos después de que el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
         });
 
-        // Si tarda más de 5 segundos, ocultar de todas formas
-        setTimeout(function() {
-            document.getElementById('loadingScreen').classList.add('hidden');
-        }, 5000);
+        // Ocultar pantalla de carga cuando todo esté listo
+        window.addEventListener('load', function() {
+            // Asegurarse de que Chart.js y Lucide estén cargados
+            Promise.all([
+                typeof Chart !== 'undefined',
+                typeof lucide !== 'undefined'
+            ]).then(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            });
+        });
 
-        lucide.createIcons();
-        
+        // Función para cambiar el tema
         function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
@@ -159,10 +170,13 @@
             localStorage.setItem('theme', newTheme);
         }
 
+        // Cargar tema guardado
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
         });
     </script>
+
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>
