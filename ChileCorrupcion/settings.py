@@ -29,7 +29,28 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 
-handler404 = 'visualization.views.error_404_view'
+handler404 = 'visualization.views.custom_404'
+handler500 = 'visualization.views.custom_500'
+
+# Configuración de logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
 
 # Application definition
 
