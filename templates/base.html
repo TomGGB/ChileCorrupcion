@@ -6,11 +6,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <title>{% block title %}Chile Corrupción{% endblock %}</title>
+    
+    <!-- Precargar estilos críticos -->
+    <link rel="preload" href="{% static 'css/output.css' %}" as="style">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" as="style">
+    
+    <!-- Estilos -->
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Pantalla de carga inicial -->
+    <style>
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: hsl(var(--b1));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease-out;
+        }
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid hsl(var(--p));
+            border-top: 5px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
+    <!-- Pantalla de carga -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+    </div>
+
     <div class="drawer lg:drawer-open">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
         
@@ -96,6 +139,16 @@
     </div>
 
     <script>
+        // Ocultar pantalla de carga cuando todo esté listo
+        window.addEventListener('load', function() {
+            document.getElementById('loadingScreen').classList.add('hidden');
+        });
+
+        // Si tarda más de 5 segundos, ocultar de todas formas
+        setTimeout(function() {
+            document.getElementById('loadingScreen').classList.add('hidden');
+        }, 5000);
+
         lucide.createIcons();
         
         function toggleTheme() {
