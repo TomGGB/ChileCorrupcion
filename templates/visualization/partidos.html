@@ -46,8 +46,8 @@
         <div class="card-body relative p-4">
             <div class="absolute top-2 left-2">
                 <div class="stat py-1 px-2">
-                    <div class="stat-title text-[8px]">Total Casos</div>
-                    <div class="stat-value text-[12px] font-normal">{{ partido.total_casos }}</div>
+                    <div class="stat-title text-xs">Total Casos</div>
+                    <div class="stat-value text-base font-normal">{{ partido.total_casos }}</div>
                 </div>
             </div>
 
@@ -72,8 +72,8 @@
                 
                 <div class="stats mt-4">
                     <div class="stat py-1 px-2">
-                        <div class="stat-title text-[8px]">Monto Total</div>
-                        <div class="stat-value text-secondary text-[12px] font-normal">
+                        <div class="stat-title text-xs">Monto Total</div>
+                        <div class="stat-value text-secondary text-base font-normal">
                             ${{ partido.total_monto|format_large_number }}
                         </div>
                     </div>
