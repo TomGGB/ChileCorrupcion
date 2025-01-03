@@ -40,10 +40,10 @@ class CasoCorrupcion(models.Model):
     monto = models.BigIntegerField(null=True, blank=True)
     año = models.IntegerField()
     responsables = models.ManyToManyField(Responsable, blank=True)  
-    partido = models.ForeignKey(Partido, on_delete=models.SET_NULL, null=True, blank=True)
+    partido = models.ManyToManyField(Partido, blank=True)
     ano_inicio = models.IntegerField(null=True, blank=True)
     ano_fin = models.IntegerField(null=True, blank=True)
-    comuna = models.ForeignKey('ComunaChileCUT', on_delete=models.SET_NULL, null=True, blank=True)
+    comuna = models.ManyToManyField('ComunaChileCUT', blank=True)
     posicion = models.CharField(max_length=255, null=True, blank=True)
     estado = models.CharField(
         max_length=255,

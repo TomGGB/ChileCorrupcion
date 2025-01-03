@@ -152,7 +152,7 @@ def responsable_detalle(request, responsable_id):
     casos = (
         CasoCorrupcion.objects
         .filter(responsables=responsable)
-        .select_related('partido')
+        .prefetch_related('partido')
         .order_by('-año')
     )
     

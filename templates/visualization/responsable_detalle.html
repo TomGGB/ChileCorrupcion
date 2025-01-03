@@ -39,10 +39,12 @@
                             <td>{{ caso.caso }}</td>
                             <td>{{ caso.año }}</td>
                             <td>
-                                {% if caso.partido %}
-                                    <a href="{% url 'partido_detalle' caso.partido.id %}" class="link link-primary">
-                                        {{ caso.partido.nombre }}
-                                    </a>
+                                {% if caso.partido.all %}
+                                    {% for partido in caso.partido.all %}
+                                        <a href="{% url 'partido_detalle' partido.id %}" class="link link-primary">
+                                            {{ partido.nombre }}{% if not forloop.last %}, {% endif %}
+                                        </a>
+                                    {% endfor %}
                                 {% else %}
                                     No especificado
                                 {% endif %}

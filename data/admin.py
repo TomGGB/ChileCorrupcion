@@ -29,14 +29,19 @@ class PartidoAdmin(admin.ModelAdmin):
 
 @admin.register(CasoCorrupcion)
 class CasoCorrupcionAdmin(admin.ModelAdmin):
-    list_display = ('caso', 'año', 'get_responsables', 'partido', 'monto', 'estado')
-    list_filter = ('año', 'partido', 'estado')
-    search_fields = ('caso', 'responsables__nombre')
-    autocomplete_fields = ['responsables', 'partido']
+    list_display = ('caso', 'año', 'get_responsables', 'get_partidos', 'monto', 'estado')
+    list_filter = ('año', 'partido', 'estado', 'comuna')
+    search_fields = ('caso', 'responsables__nombre', 'partido__nombre', 'comuna__comuna')
+    autocomplete_fields = ['responsables', 'partido', 'comuna']
+    filter_horizontal = ('partido', 'comuna', 'responsables')
 
     def get_responsables(self, obj):
         return ", ".join([r.nombre for r in obj.responsables.all()])
     get_responsables.short_description = 'Responsables'
+
+    def get_partidos(self, obj):
+        return ", ".join([p.nombre for p in obj.partido.all()])
+    get_partidos.short_description = 'Partidos'
 
 @admin.register(RegionChileCUT)
 class RegionChileCUTAdmin(admin.ModelAdmin):
