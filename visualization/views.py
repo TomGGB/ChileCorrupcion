@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from data.models import CasoCorrupcion, CorruptionPerceptionIndexChile, CEPDatosPercepcion, Partido, Sector, Responsable
+from data.models import CasoCorrupcion, CorruptionPerceptionIndexChile, CEPDatosPercepcion, Partido, Sector, Responsable, ComparacionMonetaria
 from django.db.models import Sum, Count, Q
 
 def dashboard(request):
@@ -189,8 +189,23 @@ def caso_detalle(request, caso_id):
         id=caso_id
     )
     
+    # Obtener comparaciones relevantes
+    comparaciones = []
+    if caso.monto:
+        for comp in ComparacionMonetaria.objects.all():
+            cantidad = caso.monto / comp.valor
+            if cantidad >= 1:  # Solo mostrar si se puede comprar al menos 1
+                comparaciones.append({
+                    'nombre': comp.nombre,
+                    'cantidad': int(cantidad),
+                    'valor_unitario': comp.valor,
+                    'descripcion': comp.descripcion,
+                    'imagen': comp.imagen if comp.imagen else None
+                })
+    
     return render(request, 'visualization/caso_detalle.html', {
-        'caso': caso
+        'caso': caso,
+        'comparaciones': comparaciones
     })
 
 def custom_404(request, exception):
@@ -198,3 +213,35 @@ def custom_404(request, exception):
 
 def custom_500(request):
     return render(request, '500.html', status=500)
+
+def comparaciones(request):
+    caso_id = request.GET.get('caso')
+    comparacion_id = request.GET.get('comparacion')
+    
+    casos = CasoCorrupcion.objects.filter(monto__isnull=False).order_by('-año')
+    comparaciones = ComparacionMonetaria.objects.all().order_by('nombre')
+    
+    resultado = None
+    if caso_id and comparacion_id:
+        try:
+            caso = CasoCorrupcion.objects.get(id=caso_id)
+            comparacion = ComparacionMonetaria.objects.get(id=comparacion_id)
+            
+            cantidad = caso.monto / comparacion.valor
+            
+            resultado = {
+                'caso': caso,
+                'comparacion': comparacion,
+                'cantidad': int(cantidad),
+                'valor_unitario': comparacion.valor
+            }
+        except (CasoCorrupcion.DoesNotExist, ComparacionMonetaria.DoesNotExist):
+            pass
+    
+    return render(request, 'visualization/comparaciones.html', {
+        'casos': casos,
+        'comparaciones': comparaciones,
+        'resultado': resultado,
+        'caso_seleccionado': caso_id,
+        'comparacion_seleccionada': comparacion_id
+    })

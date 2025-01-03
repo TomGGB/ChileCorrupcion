@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <title>{% block title %}Chile Corrupción{% endblock %}</title>
-    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
@@ -33,6 +33,7 @@
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                     <li><a href="{% url 'casos' %}">Casos</a></li>
+                    <li><a href="{% url 'comparaciones' %}">Comparaciones</a></li>
                     <li><a href="{% url 'partidos' %}">Partidos Políticos</a></li>
                     <li><a href="{% url 'involucrados' %}">Involucrados</a></li>
                 </ul>

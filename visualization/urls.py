@@ -9,4 +9,5 @@ urlpatterns = [
     path('involucrados/<int:responsable_id>/', views.responsable_detalle, name='responsable_detalle'),
     path('casos/', views.casos, name='casos'),
     path('casos/<int:caso_id>/', views.caso_detalle, name='caso_detalle'),
+    path('comparaciones/', views.comparaciones, name='comparaciones'),
 ]

@@ -84,6 +84,32 @@
                 {% endif %}
             </div>
             {% endif %}
+
+            {% if comparaciones %}
+            <div class="divider">¿Qué se podría haber hecho con este dinero?</div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for comp in comparaciones %}
+                <div class="card bg-base-200">
+                    <div class="card-body">
+                        {% if comp.imagen %}
+                        <img src="{{ comp.imagen.url }}" alt="{{ comp.nombre }}" class="rounded-lg mb-4">
+                        {% endif %}
+                        
+                        <h3 class="card-title">{{ comp.cantidad|intcomma }} {{ comp.nombre }}</h3>
+                        
+                        <p class="text-sm opacity-70">
+                            Valor unitario: ${{ comp.valor_unitario|format_large_number }}
+                        </p>
+                        
+                        {% if comp.descripcion %}
+                        <p class="mt-2">{{ comp.descripcion }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

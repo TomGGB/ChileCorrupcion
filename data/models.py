@@ -53,6 +53,11 @@ class CasoCorrupcion(models.Model):
     sentencia = models.CharField(max_length=255, null=True, blank=True)
     condena = models.CharField(max_length=255, null=True, blank=True)
     conclusiones = models.TextField(null=True, blank=True)
+    comparaciones = models.ManyToManyField(
+        'ComparacionMonetaria',
+        blank=True,
+        related_name='casos'
+    )
 
     def __str__(self):
         return self.caso
@@ -108,3 +113,16 @@ class CEPDatosPercepcion(models.Model):
 
     def __str__(self):
         return f'{self.fecha} - {self.variable}'
+
+class ComparacionMonetaria(models.Model):
+    nombre = models.CharField(max_length=200)
+    valor = models.BigIntegerField(help_text="Valor en pesos chilenos")
+    descripcion = models.TextField(blank=True)
+    imagen = models.ImageField(upload_to='comparaciones/', blank=True)
+    
+    class Meta:
+        verbose_name = "Comparación Monetaria"
+        verbose_name_plural = "Comparaciones Monetarias"
+        
+    def __str__(self):
+        return self.nombre

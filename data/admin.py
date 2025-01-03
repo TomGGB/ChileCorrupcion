@@ -8,7 +8,8 @@ from .models import (
     ProvinciaChileCUT,
     ComunaChileCUT,
     CorruptionPerceptionIndexChile,
-    CEPDatosPercepcion
+    CEPDatosPercepcion,
+    ComparacionMonetaria
 )
 
 @admin.register(Responsable)
@@ -70,3 +71,12 @@ class CEPDatosPercepcionAdmin(admin.ModelAdmin):
     list_display = ('fecha', 'encuesta', 'variable', 'porcentaje')
     list_filter = ('año', 'variable')
     search_fields = ('variable',)
+
+@admin.register(ComparacionMonetaria)
+class ComparacionMonetariaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'formatted_valor', 'descripcion')
+    search_fields = ('nombre',)
+    
+    def formatted_valor(self, obj):
+        return f"${obj.valor:,}"
+    formatted_valor.short_description = "Valor (CLP)"

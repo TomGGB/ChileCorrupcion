@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load humanize %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="text-2xl font-bold mb-6">Comparador de Casos</h2>
+            
+            <form method="get" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Selecciona un Caso</span>
+                    </label>
+                    <select name="caso" class="select select-bordered w-full" onchange="this.form.submit()">
+                        <option value="">Selecciona un caso...</option>
+                        {% for caso in casos %}
+                        <option value="{{ caso.id }}" {% if caso.id|stringformat:"s" == caso_seleccionado %}selected{% endif %}>
+                            {{ caso.caso }} (${{ caso.monto|format_large_number }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Comparar con</span>
+                    </label>
+                    <select name="comparacion" class="select select-bordered w-full" onchange="this.form.submit()">
+                        <option value="">Selecciona un objeto...</option>
+                        {% for comp in comparaciones %}
+                        <option value="{{ comp.id }}" {% if comp.id|stringformat:"s" == comparacion_seleccionada %}selected{% endif %}>
+                            {{ comp.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+
+            {% if resultado %}
+            <div class="divider">Resultado de la Comparación</div>
+            
+            <div class="flex flex-col items-center text-center">
+                <h3 class="text-xl mb-4">Con el dinero del caso <span class="font-bold">{{ resultado.caso.caso }}</span></h3>
+                
+                <div class="stats shadow mb-6">
+                    <div class="stat">
+                        <div class="stat-title">Se podrían haber comprado</div>
+                        <div class="stat-value text-primary">{{ resultado.cantidad|format_large_number }}</div>
+                        <div class="stat-desc">{{ resultado.comparacion.nombre }}</div>
+                        <div class="stat-desc mt-2">
+                            Valor unitario: ${{ resultado.valor_unitario|format_large_number }}
+                        </div>
+                        {% if resultado.comparacion.descripcion %}
+                        <p class="mt-4">{{ resultado.comparacion.descripcion }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if resultado.comparacion.imagen %}
+                <div class="w-full mb-6 p-4 bg-base-200 rounded-box">
+                    <div class="flex flex-col items-center">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full border-2 border-primary overflow-hidden">
+                                <img src="{{ resultado.comparacion.imagen.url }}" 
+                                     alt="{{ resultado.comparacion.nombre }}" 
+                                     class="w-full h-full object-contain p-1">
+                            </div>
+                            <div class="text-sm">
+                                = 1 {{ resultado.comparacion.nombre }}
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            {% with ''|center:resultado.cantidad as range %}
+                            {% for _ in range %}
+                                <div class="w-8 h-8 relative flex-shrink-0">
+                                    <div class="absolute inset-0 rounded-full border-2 border-primary overflow-hidden bg-base-100">
+                                        <img src="{{ resultado.comparacion.imagen.url }}" 
+                                             alt="{{ resultado.comparacion.nombre }}"
+                                             class="w-full h-full object-contain p-1">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            {% endwith %}
+                        </div>
+                        
+                        <p class="text-sm opacity-70 mt-4">
+                            Total: {{ resultado.cantidad|format_large_number }} {{ resultado.comparacion.nombre }}
+                            que se podrían haber comprado con ${{ resultado.caso.monto|format_large_number }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
