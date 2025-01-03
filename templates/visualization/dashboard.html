@@ -3,7 +3,7 @@
 
 {% block content %}
 <!-- Tarjetas de Resumen -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <div class="card bg-primary text-primary-content">
         <div class="card-body">
             <h2 class="card-title">
@@ -54,15 +54,15 @@
 </div>
 
 <!-- Gráficos -->
-<div class="flex justify-between items-center mb-4">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
     <h2 class="card-title">Estadísticas por Partido y Sector</h2>
-    <select id="tipoData" class="select select-bordered w-48">
+    <select id="tipoData" class="select select-bordered w-full sm:w-48">
         <option value="casos">Cantidad de Casos</option>
         <option value="monto">Monto Total</option>
     </select>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
             <h3 class="card-title">
