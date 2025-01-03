@@ -192,3 +192,6 @@ def caso_detalle(request, caso_id):
     return render(request, 'visualization/caso_detalle.html', {
         'caso': caso
     })
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)

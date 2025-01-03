@@ -24,10 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-(s78z8*i%8!_r&#mppvdzcazon!82l$k(pl12+fa-sz#6at^tw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
+
+handler404 = 'visualization.views.error_404_view'
 
 # Application definition
 
