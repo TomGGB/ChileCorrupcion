@@ -115,48 +115,79 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Datos
+    const sectorData = {{ casos_por_sector|safe }};
+    const partidoData = {{ casos_por_partido|safe }};
+    const casosData = {{ casos_por_ano|safe }};
+    const percepcionData = {{ percepcion_corrupcion|safe }};
+    
+    // Configuración común
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        animation: {
-            duration: 500
-        },
         plugins: {
             legend: {
-                display: true,
                 position: 'bottom'
             }
         }
     };
 
-    // Gráfico por Sector
-    const sectorData = {{ casos_por_sector|safe }};
-    const configSector = {
-        type: 'pie',
-        data: {
-            labels: sectorData.map(item => item.partido__sector__nombre),
-            datasets: [{
-                data: sectorData.map(item => item.total),
-                backgroundColor: sectorData.map(item => item.partido__sector__color)
-            }]
-        },
-        options: commonOptions
-    };
-    const chartSector = new Chart(
-        document.getElementById('casosPorSector'),
-        configSector
-    );
+    // Gráficos iniciales
+    let chartSector, chartPartido;
+    
+    function updateCharts(tipo) {
+        // Actualizar gráfico de sectores
+        const sectorConfig = {
+            type: 'pie',
+            data: {
+                labels: sectorData.map(item => item.partido__sector__nombre),
+                datasets: [{
+                    data: sectorData.map(item => tipo === 'monto' ? item.total_monto : item.total),
+                    backgroundColor: sectorData.map(item => item.partido__sector__color || '#000000')
+                }]
+            },
+            options: commonOptions
+        };
+        
+        if (chartSector) chartSector.destroy();
+        chartSector = new Chart(
+            document.getElementById('casosPorSector'),
+            sectorConfig
+        );
 
-    // Gráfico por Partido
-    const partidoData = {{ casos_por_partido|safe }};
-    const configPartido = {
+        // Actualizar gráfico de partidos
+        const partidoConfig = {
+            type: 'bar',
+            data: {
+                labels: partidoData.map(item => item.partido__nombre),
+                datasets: [{
+                    label: tipo === 'monto' ? 'Monto Total' : 'Cantidad de Casos',
+                    data: partidoData.map(item => tipo === 'monto' ? item.total_monto : item.total_casos),
+                    backgroundColor: partidoData.map(item => item.partido__sector__color || '#000000')
+                }]
+            },
+            options: {
+                ...commonOptions,
+                indexAxis: 'y'
+            }
+        };
+        
+        if (chartPartido) chartPartido.destroy();
+        chartPartido = new Chart(
+            document.getElementById('casosPorPartido'),
+            partidoConfig
+        );
+    }
+
+    // Gráfico de casos por año
+    const configCasos = {
         type: 'bar',
         data: {
-            labels: partidoData.map(item => item.partido__nombre),
+            labels: casosData.map(item => item.año),
             datasets: [{
-                label: 'Cantidad de Casos',
-                data: partidoData.map(item => item.total_casos),
-                backgroundColor: partidoData.map(item => item.partido__sector__color)
+                label: 'Casos',
+                data: casosData.map(item => item.total),
+                backgroundColor: '#4CAF50'
             }]
         },
         options: {
@@ -168,74 +199,46 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     };
-    const chartPartido = new Chart(
-        document.getElementById('casosPorPartido'),
-        configPartido
-    );
-
-    // Gráfico por Año
-    const anoData = {{ casos_por_ano|safe }};
-    const configAno = {
-        type: 'bar',
-        data: {
-            labels: anoData.map(item => item.año),
-            datasets: [{
-                label: 'Casos por Año',
-                data: anoData.map(item => item.total),
-                backgroundColor: '#36A2EB'
-            }]
-        },
-        options: {
-            ...commonOptions,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    };
-    const chartAno = new Chart(
+    new Chart(
         document.getElementById('casosPorAno'),
-        configAno
+        configCasos
     );
 
-    // Gráfico de Percepción
-    const percepcionData = {{ percepcion_corrupcion|safe }};
+    // Gráfico de percepción de corrupción
     const configPercepcion = {
         type: 'line',
         data: {
             labels: percepcionData.map(item => item.año),
             datasets: [{
-                label: 'Índice de Percepción',
+                label: 'Índice CPI',
                 data: percepcionData.map(item => item.cpi),
                 borderColor: '#FF6384',
-                tension: 0.1
+                tension: 0.1,
+                fill: false
             }]
         },
-        options: commonOptions
+        options: {
+            ...commonOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
     };
-    const chartPercepcion = new Chart(
+    new Chart(
         document.getElementById('percepcionCorrupcion'),
         configPercepcion
     );
 
-    // Selector de tipo de datos
+    // Event listener para el selector
     document.getElementById('tipoData').addEventListener('change', function(e) {
-        const tipo = e.target.value;
-        
-        // Actualizar gráfico de sectores
-        chartSector.data.datasets[0].data = sectorData.map(item => 
-            tipo === 'casos' ? item.total : item.total_monto
-        );
-        chartSector.update();
-
-        // Actualizar gráfico de partidos
-        chartPartido.data.datasets[0].label = tipo === 'casos' ? 'Cantidad de Casos' : 'Monto Total';
-        chartPartido.data.datasets[0].data = partidoData.map(item => 
-            tipo === 'casos' ? item.total_casos : item.total_monto
-        );
-        chartPartido.update();
+        updateCharts(e.target.value);
     });
+
+    // Inicializar gráficos
+    updateCharts('casos');
 });
 </script>
 {% endblock %}

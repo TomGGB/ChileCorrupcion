@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +20,8 @@
                     </div>
                     <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                         <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'casos' %}">Casos</a></li>
+                        <li><a href="{% url 'comparaciones' %}">Comparaciones</a></li>
                         <li><a href="{% url 'partidos' %}">Partidos Políticos</a></li>
                         <li><a href="{% url 'involucrados' %}">Involucrados</a></li>
                     </ul>
@@ -29,7 +31,12 @@
                     Chile Corrupción
                 </a>
             </div>
-            <div class="navbar-end hidden lg:flex">
+            <div class="navbar-end">
+                <button onclick="toggleTheme()" class="btn btn-circle btn-ghost">
+                    <i data-lucide="sun" class="h-5 w-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="h-5 w-5 block dark:hidden"></i>
+                </button>
+                
                 <ul class="menu menu-horizontal px-1">
                     <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                     <li><a href="{% url 'casos' %}">Casos</a></li>
@@ -49,6 +56,29 @@
     <!-- Script para inicializar los iconos -->
     <script>
         lucide.createIcons();
+        
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // Aplicar el tema con una transición suave
+            html.classList.add('transition-colors');
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Remover la clase de transición después de completarse
+            setTimeout(() => {
+                html.classList.remove('transition-colors');
+            }, 300);
+        }
+
+        // Cargar tema al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        });
     </script>
 </body>
 </html>
