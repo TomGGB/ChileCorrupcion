@@ -29,35 +29,50 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: hsl(var(--b1));
+            background-color: transparent;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
             transition: opacity 0.3s ease-out;
+            backdrop-filter: blur(8px);
         }
         .loading-screen.hidden {
             opacity: 0;
             pointer-events: none;
         }
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid hsl(var(--p));
-            border-top: 5px solid transparent;
+        .loader {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            position: relative;
+            animation: rotate 1s linear infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
+        .loader::before {
+            content: "";
+            box-sizing: border-box;
+            position: absolute;
+            inset: 0px;
+            border-radius: 50%;
+            border: 5px solid hsl(var(--p));
+            animation: prixClipFix 2s linear infinite;
+        }
+        @keyframes rotate {
             100% { transform: rotate(360deg); }
+        }
+        @keyframes prixClipFix {
+            0% { clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0); }
+            25% { clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0); }
+            50% { clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%); }
+            75% { clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%); }
+            100% { clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0); }
         }
     </style>
 </head>
 <body>
     <!-- Pantalla de carga -->
     <div id="loadingScreen" class="loading-screen">
-        <div class="loading-spinner"></div>
+        <div class="loader"></div>
     </div>
 
     <div class="drawer lg:drawer-open">
