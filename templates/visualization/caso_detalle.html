@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="text-3xl font-bold mb-2">{{ caso.caso }}</h1>
+            
+            <div class="flex flex-wrap gap-4 mb-6">
+                <div class="badge badge-lg">Año: {{ caso.año }}</div>
+                <div class="badge badge-lg badge-outline">{{ caso.estado }}</div>
+            </div>
+
+            <div class="stats shadow mb-6">
+                <div class="stat">
+                    <div class="stat-title">Monto Involucrado</div>
+                    <div class="stat-value text-secondary">
+                        ${{ caso.monto|format_large_number }}
+                    </div>
+                </div>
+                {% if caso.ano_inicio or caso.ano_fin %}
+                <div class="stat">
+                    <div class="stat-title">Período</div>
+                    <div class="stat-value text-base">
+                        {{ caso.ano_inicio|default:"?" }} - {{ caso.ano_fin|default:"?" }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Responsables</h2>
+                    <div class="space-y-2">
+                        {% for responsable in caso.responsables.all %}
+                        <a href="{% url 'responsable_detalle' responsable.id %}" 
+                           class="block p-3 bg-base-200 rounded-lg hover:bg-base-300">
+                            {{ responsable.nombre }}
+                        </a>
+                        {% empty %}
+                        <p class="text-sm opacity-70">No hay responsables registrados</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold mb-4">Partidos Involucrados</h2>
+                    <div class="space-y-2">
+                        {% for partido in caso.partido.all %}
+                        <a href="{% url 'partido_detalle' partido.id %}" 
+                           class="block p-3 bg-base-200 rounded-lg hover:bg-base-300">
+                            {{ partido.nombre }}
+                        </a>
+                        {% empty %}
+                        <p class="text-sm opacity-70">No hay partidos registrados</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {% if caso.conclusiones %}
+            <div class="divider"></div>
+            <div class="prose max-w-none">
+                <h2>Conclusiones</h2>
+                {{ caso.conclusiones|linebreaks }}
+            </div>
+            {% endif %}
+
+            {% if caso.sentencia or caso.condena %}
+            <div class="divider"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% if caso.sentencia %}
+                <div>
+                    <h2 class="text-xl font-bold mb-2">Sentencia</h2>
+                    <p>{{ caso.sentencia }}</p>
+                </div>
+                {% endif %}
+                {% if caso.condena %}
+                <div>
+                    <h2 class="text-xl font-bold mb-2">Condena</h2>
+                    <p>{{ caso.condena }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

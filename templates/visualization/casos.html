@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="mb-6">
+    <form method="get" class="flex gap-2 max-w-xl">
+        <div class="form-control flex-1">
+            <div class="join w-full">
+                <input type="text" 
+                       name="q" 
+                       placeholder="Buscar casos..." 
+                       class="input input-bordered join-item w-full"
+                       value="{{ query }}">
+                <button class="btn btn-outline join-item">
+                    <i data-lucide="search" class="h-5 w-5"></i>
+                </button>
+            </div>
+        </div>
+        {% if query %}
+        <a href="{% url 'casos' %}" class="btn btn-outline flex items-center gap-2">
+            <i data-lucide="x" class="h-4 w-4"></i>
+            Limpiar
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+        <thead>
+            <tr>
+                <th>Caso</th>
+                <th>Año</th>
+                <th>Responsables</th>
+                <th>Partidos</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for caso in casos %}
+            <tr>
+                <td>{{ caso.caso }}</td>
+                <td>{{ caso.año }}</td>
+                <td>
+                    {% for responsable in caso.responsables.all %}
+                        <a href="{% url 'responsable_detalle' responsable.id %}" class="link link-primary">
+                            {{ responsable.nombre }}{% if not forloop.last %}, {% endif %}
+                        </a>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for partido in caso.partido.all %}
+                        <a href="{% url 'partido_detalle' partido.id %}" class="link link-primary">
+                            {{ partido.nombre }}{% if not forloop.last %}, {% endif %}
+                        </a>
+                    {% endfor %}
+                </td>
+                <td>${{ caso.monto|format_large_number }}</td>
+                <td>
+                    <div class="badge badge-outline whitespace-normal text-wrap h-auto">
+                        {{ caso.estado }}
+                    </div>
+                </td>
+                <td>
+                    <a href="{% url 'caso_detalle' caso.id %}" class="btn btn-sm btn-primary">
+                        <i data-lucide="info" class="w-4 h-4"></i>
+                        Ver Detalles
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

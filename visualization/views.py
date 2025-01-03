@@ -160,3 +160,35 @@ def responsable_detalle(request, responsable_id):
         'responsable': responsable,
         'casos': casos
     })
+
+def casos(request):
+    query = request.GET.get('q', '')
+    
+    casos = (
+        CasoCorrupcion.objects
+        .prefetch_related('responsables', 'partido', 'comuna')
+        .order_by('-año')
+    )
+    
+    if query:
+        casos = casos.filter(
+            Q(caso__icontains=query) |
+            Q(responsables__nombre__icontains=query) |
+            Q(partido__nombre__icontains=query)
+        ).distinct()
+    
+    return render(request, 'visualization/casos.html', {
+        'casos': casos,
+        'query': query
+    })
+
+def caso_detalle(request, caso_id):
+    caso = get_object_or_404(
+        CasoCorrupcion.objects
+        .prefetch_related('responsables', 'partido', 'comuna'),
+        id=caso_id
+    )
+    
+    return render(request, 'visualization/caso_detalle.html', {
+        'caso': caso
+    })
